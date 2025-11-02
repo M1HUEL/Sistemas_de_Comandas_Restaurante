@@ -99,24 +99,50 @@ public class ComandasControlador {
             return;
         }
 
-        String[] nombres = productos.stream().map(Producto::getNombre).toArray(String[]::new);
-        String seleccionado = (String) JOptionPane.showInputDialog(null, "Seleccione un producto",
-                "Agregar Producto", JOptionPane.PLAIN_MESSAGE, null, nombres, nombres[0]);
-        if (seleccionado != null) {
-            Producto p = productoDAO.buscarPorNombre(seleccionado);
-            String cantidadStr = JOptionPane.showInputDialog(null, "Cantidad:");
+        JPanel panel = new JPanel(new GridLayout(2, 2, 10, 10));
+        panel.add(new JLabel("Producto:"));
+
+        String[] nombres = productos.stream()
+                .map(Producto::getNombre)
+                .toArray(String[]::new);
+        JComboBox<String> comboProductos = new JComboBox<>(nombres);
+        panel.add(comboProductos);
+
+        panel.add(new JLabel("Cantidad:"));
+        JTextField txtCantidad = new JTextField();
+        panel.add(txtCantidad);
+
+        int result = JOptionPane.showConfirmDialog(
+                null,
+                panel,
+                "Agregar Producto a Comanda",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
             try {
-                int cantidad = Integer.parseInt(cantidadStr);
+                String seleccionado = (String) comboProductos.getSelectedItem();
+                Producto p = productoDAO.buscarPorNombre(seleccionado);
+
+                int cantidad = Integer.parseInt(txtCantidad.getText().trim());
+                if (cantidad <= 0) {
+                    JOptionPane.showMessageDialog(null, "La cantidad debe ser mayor que cero.");
+                    return;
+                }
+
                 double subtotal = cantidad * p.getPrecio();
+
                 modeloProductos.addRow(new Object[]{
                     p.getNombre(),
                     cantidad,
                     p.getPrecio(),
                     subtotal
                 });
+
                 actualizarTotal();
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "Cantidad inválida.");
+                JOptionPane.showMessageDialog(null, "Cantidad inválida.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

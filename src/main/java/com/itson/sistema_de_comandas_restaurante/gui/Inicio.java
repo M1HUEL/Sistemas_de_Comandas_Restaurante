@@ -14,7 +14,6 @@ import javax.swing.table.DefaultTableModel;
 
 public class Inicio extends JFrame {
 
-    private JPanel panelIndicadores;
     private JTable tablaComandas;
     private DefaultTableModel modeloTabla;
     private InicioControlador controlador;
@@ -26,7 +25,7 @@ public class Inicio extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        panelIndicadores = new JPanel(new GridLayout(1, 4, 10, 10));
+        JPanel panelPrincipal = new JPanel(new BorderLayout());
 
         modeloTabla = new DefaultTableModel(
                 new String[]{"Folio", "Mesa", "Cliente", "Estado", "Total"}, 0) {
@@ -35,19 +34,18 @@ public class Inicio extends JFrame {
                 return false;
             }
         };
+
         tablaComandas = new JTable(modeloTabla);
         JScrollPane scrollPane = new JScrollPane(tablaComandas);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Comandas Recientes"));
 
-        JPanel panelPrincipal = new JPanel(new BorderLayout());
-        panelPrincipal.add(panelIndicadores, BorderLayout.NORTH);
         panelPrincipal.add(scrollPane, BorderLayout.CENTER);
 
         JPanel sideMenu = new JPanel(new GridLayout(7, 1, 5, 5));
         sideMenu.setPreferredSize(new Dimension(200, 0));
 
         JButton btnInicio = new JButton("Inicio");
-        JButton btnComandas = new JButton("Comandas"); // ✅ Nuevo botón
+        JButton btnComandas = new JButton("Comandas");
         JButton btnProductos = new JButton("Productos");
         JButton btnIngredientes = new JButton("Ingredientes");
         JButton btnClientes = new JButton("Clientes Frecuentes");
@@ -65,7 +63,7 @@ public class Inicio extends JFrame {
         add(sideMenu, BorderLayout.WEST);
         add(panelPrincipal, BorderLayout.CENTER);
 
-        controlador = new InicioControlador(panelIndicadores, modeloTabla);
+        controlador = new InicioControlador(modeloTabla);
         controlador.inicializar();
 
         btnInicio.addActionListener(e -> this.toFront());
